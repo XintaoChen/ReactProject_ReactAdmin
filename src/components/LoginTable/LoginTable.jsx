@@ -2,9 +2,9 @@ import React from "react";
 import { Form, Input, Button, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
-function LoginTable() {
+function LoginTable(props) {
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+    props.getLoginInfo(values);
   };
 
   return (
@@ -23,7 +23,20 @@ function LoginTable() {
             required: true,
             message: "Please input your Username!",
           },
+          {
+            pattern: /^[\w]+$/,
+            message: "Please input only numbers, letters or underline.",
+          },
+          {
+            min: 4,
+            message: "Please input no less than 4 letters!",
+          },
+          {
+            max: 12,
+            message: "Please input no more than 12 letters!",
+          },
         ]}
+        validateFirst={true}
       >
         <Input
           prefix={<UserOutlined className="site-form-item-icon" />}
@@ -37,7 +50,20 @@ function LoginTable() {
             required: true,
             message: "Please input your Password!",
           },
+          {
+            pattern: /^[\w]+$/,
+            message: "Please input only numbers, letters or underline.",
+          },
+          {
+            min: 4,
+            message: "Please input no less than 4 letters!",
+          },
+          {
+            max: 12,
+            message: "Please input no more than 12 letters!",
+          },
         ]}
+        validateFirst={true}
       >
         <Input
           prefix={<LockOutlined className="site-form-item-icon" />}

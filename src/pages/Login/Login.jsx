@@ -5,6 +5,13 @@ import logo from "./img/logo.png";
 import LoginTable from "../../components/LoginTable/LoginTable";
 
 function Login() {
+
+  // get login infomation from 
+  const getLoginInfo = (user) => {
+    console.log(user.username)
+    console.log(user.password)
+  }
+
   return (
     <div className="login">
       <header className="login-header">
@@ -13,7 +20,7 @@ function Login() {
       </header>
       <section className="login-content">
         <h2>User Login</h2>
-        <LoginTable></LoginTable>
+        <LoginTable getLoginInfo={getLoginInfo}></LoginTable>
       </section>
     </div>
   );
