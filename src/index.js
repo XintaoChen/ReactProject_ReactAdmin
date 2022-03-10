@@ -1,17 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+// entry file
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+import React from "react";
+import ReactDom from "react-dom";
+
+import App from "./App";
+import memoryUtils from "./utils/memoryUtils";
+import storageUtils from "./utils/storageUtils";
+
+// redux
+import store from "./redux/store";
+import { Provider } from "react-redux";
+
+// update memory from local storage
+memoryUtils.user = storageUtils.getUser();
+
+// render App component to root div at index page
+ReactDom.render(
+  <Provider store={store}>
+    <App></App>
+  </Provider>,
+  document.getElementById("root")
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
