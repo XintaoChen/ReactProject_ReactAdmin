@@ -94,3 +94,18 @@ export const getIcon = (iconString) => {
       return <AppstoreOutlined />;
   }
 };
+
+export const getTitle = (key) => {
+  let title;
+  menuList.forEach((item) => {
+    if (item.key === key) {
+      title = item.title;
+    } else if (item.children) {
+      const cItem = item.children.find((cItem) => cItem.key === key);
+      if (cItem) {
+        title = cItem.title;
+      }
+    }
+  });
+  return title;
+};

@@ -1,12 +1,9 @@
 import React from "react";
 
-import { connect } from "react-redux";
-import { createSelectionAction } from "../../../redux/actions/LeftNav";
+import "./Home.less";
 
 function Home() {
-  return <div>Home</div>;
+  return <div className="home">Welcome to use BMS</div>;
 }
 
-export default connect((state) => ({ leftNav: state.leftNav }), {
-  select: createSelectionAction,
-})(Home);
+export default Home;
