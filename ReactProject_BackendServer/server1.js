@@ -10,9 +10,10 @@ const db = require("./models/db");
 
 // link to routes
 const userRouter = require("./routes/userRouter");
+const categoryRouter = require("./routes/categoryRouter");
 
 app.use("/manage/user", userRouter);
-
+app.use("/manage/category", categoryRouter);
 // login
 const loginController = require("./controllers/loginController");
 app.post("/login", (req, res) => {

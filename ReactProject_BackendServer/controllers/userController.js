@@ -5,7 +5,7 @@ const reqAddUser = async (req, res) => {
     const { username, password, phone, email } = req.body;
     const user = await User.findOne({ username: username });
     if (user && user.length != 0) {
-      res.status(404).json({
+      res.json({
         status: 1,
         msg: "this username already exist",
       });
@@ -23,12 +23,12 @@ const reqAddUser = async (req, res) => {
 
       newUser.save((err) => {
         if (err) {
-          res.status(400).json({
+          res.json({
             status: 1,
             msg: err,
           });
         } else {
-          res.status(200).json({
+          res.json({
             status: 0,
             data: newUser,
           });
@@ -37,7 +37,7 @@ const reqAddUser = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.status(400).json({
+    res.json({
       status: 1,
       msg: err,
     });
