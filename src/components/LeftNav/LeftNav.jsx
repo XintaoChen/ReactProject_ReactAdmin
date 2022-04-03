@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 
 import { Menu } from "antd";
@@ -9,7 +9,7 @@ import logo from "../../assets/img/pikachu.png";
 
 // redux
 import { connect } from "react-redux";
-import { createSelectionAction } from "../../redux/actions/LeftNav";
+import { createSelectionAction } from "../../redux/actions/curTag";
 
 const { SubMenu } = Menu;
 
@@ -44,11 +44,15 @@ function LeftNav(props) {
   // get current path to determine defaultSelectedKeys
   const location = useLocation();
   const curPath = location.pathname;
-  // console.log(curPath);
-  // props.select([curPath]);
   const openKeyList = [];
 
   const menuNodes = menuGenerate(menuList, curPath, openKeyList);
+
+  const { curTag, select } = props;
+
+  useEffect(() => {
+    select([curPath]);
+  }, [select, curPath]);
 
   return (
     <div className="left-nav">
@@ -57,13 +61,10 @@ function LeftNav(props) {
         <h1>BMS</h1>
       </Link>
       <Menu
-        selectedKeys={curPath}
+        selectedKeys={curTag}
         defaultOpenKeys={openKeyList}
         mode="inline"
         theme="dark"
-        onClick={(event) => {
-          props.select(event.keyPath);
-        }}
       >
         {menuNodes}
       </Menu>
@@ -71,6 +72,6 @@ function LeftNav(props) {
   );
 }
 
-export default connect((state) => ({ leftNav: state.leftNav }), {
+export default connect((state) => ({ curTag: state.curTag }), {
   select: createSelectionAction,
 })(LeftNav);

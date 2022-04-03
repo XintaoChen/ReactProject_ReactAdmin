@@ -1,8 +1,8 @@
 import { combineReducers } from "redux";
-import LeftNav from "./LeftNav";
+import curTag from "./curTag";
 
 // 汇总所有的reducers
 export default combineReducers({
   // 重点目录 redux存的对象的key名，用于connect函数调用对应state
-  leftNav: LeftNav,
+  curTag: curTag,
 });
