@@ -1,11 +1,16 @@
 import React from "react";
 import { Form, Input } from "antd";
+
+// redux
+import { connect } from "react-redux";
+import { createEditNameAction } from "../../redux/actions/category";
+
 function UpdateCategoryForm(props) {
-  const handelFinish = (values) => {
-    props.updateCategoty(values);
+  const handelChange = (e) => {
+    props.editName(e.target.value);
   };
   return (
-    <Form onFinish={handelFinish}>
+    <Form>
       <div>Name</div>
       <Form.Item
         name="categoryName"
@@ -16,12 +21,16 @@ function UpdateCategoryForm(props) {
             message: "Please input number, letter or underline!",
           },
         ]}
-        initialValue={props.categoryName}
       >
-        <Input></Input>
+        <Input
+          placeholder={props.targetCategory.name}
+          onChange={handelChange}
+        ></Input>
       </Form.Item>
     </Form>
   );
 }
 
-export default UpdateCategoryForm;
+export default connect((state) => ({ targetCategory: state.targetCategory }), {
+  editName: createEditNameAction,
+})(UpdateCategoryForm);

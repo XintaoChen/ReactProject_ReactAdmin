@@ -14,8 +14,13 @@ categoryRouter.get("/list", (req, res) => {
 });
 
 // update a category
-categoryRouter.get("/update", (req, res) => {
+categoryRouter.post("/update", (req, res) => {
   categoryController.reqUpdateCategory(req, res);
+});
+
+// delete a category
+categoryRouter.post("/delete", (req, res) => {
+  categoryController.reqDeleteCategory(req, res);
 });
 
 //export the router

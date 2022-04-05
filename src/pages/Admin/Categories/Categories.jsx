@@ -4,48 +4,78 @@ import LinkButton from "../../../components/LinkButton/LinkButton";
 
 import { Card, Button, Table, Space, message, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { reqCategories } from "../../../api";
+import {
+  reqCategories,
+  reqUpdateCategory,
+  reqAddCategory,
+  reqDeleteCategory,
+} from "../../../api";
 import AddCategoryForm from "../../../components/AddCategoryForm/AddCategoryForm";
 import UpdateCategoryForm from "../../../components/UpdateCategoryForm/UpdateCategoryForm";
 
-function Categories() {
+// redux
+import { connect } from "react-redux";
+import {
+  createEditAction,
+  createEditIdAction,
+} from "../../../redux/actions/category";
+
+function Categories(props) {
   const [isModalVisible, setIsModalVisible] = useState(0);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [parentId, setParentId] = useState("000000000000000000000000");
   const [title, setTitle] = useState(["Catagories"]);
   const [pathId, setPathId] = useState(["000000000000000000000000"]);
-  const [selectedCategory, setSelectedCategory] = useState("xx");
-  const addCategory = () => {
+
+  const { edit, targetCategory, editId } = props;
+
+  const handleClickAddOne = () => {
+    setIsModalVisible(1);
+    editId(parentId);
+  };
+
+  const addCategory = async () => {
     setIsModalVisible(0);
+
+    // send add a new category request to back server
+    const parentId = targetCategory._id;
+    const name = targetCategory.name;
+    let result = await reqAddCategory(name, parentId);
+    if (result.status === 0) {
+      // update table
+      getCategories();
+    } else {
+      console.log(result.msg);
+    }
   };
 
-  const handleAddCategory = (values) => {
-    console.log(values);
-  };
-
-  const showUpdate = (category) => {
-    setSelectedCategory(category);
+  const handleClickEdit = (category) => {
+    edit(category);
     setIsModalVisible(2);
   };
 
-  const updateCategory = () => {
-
-
-    
-    getCategories();
+  const updateCategory = async () => {
     setIsModalVisible(0);
-  };
 
-  const handleUpdateCategory = (values) => {
-    console.log(values);
+    // send update request to back server
+    const categoryId = targetCategory._id;
+    const categoryName = targetCategory.name;
+    let result = await reqUpdateCategory(categoryId, categoryName);
+    if (result.status === 0) {
+      // update table
+      getCategories();
+    } else {
+      console.log(result.msg);
+    }
   };
 
   const handleCancel = () => {
     setIsModalVisible(0);
   };
+
   const extra = (
-    <Button type="primary" onClick={() => setIsModalVisible(1)}>
+    <Button type="primary" onClick={handleClickAddOne}>
       <PlusOutlined />
       Add One
     </Button>
@@ -77,10 +107,30 @@ function Categories() {
     })();
   }, [parentId]);
 
-  const handleClick = (category) => {
+  const handleClickExpand = (category) => {
     setParentId(category._id);
     setTitle([...title, category.name]);
     setPathId([...pathId, category._id]);
+  };
+
+  const handleClickDelete = (category) => {
+    setIsModalVisible(3);
+    editId(category._id);
+  };
+
+  const deleteCategory = async () => {
+    setIsModalVisible(0);
+    // send delete request to back server
+    const categoryId = targetCategory._id;
+    console.log(categoryId);
+    let result = await reqDeleteCategory(categoryId);
+    if (result.status === 0) {
+      // update table
+      console.log(result.data);
+      getCategories();
+    } else {
+      console.log(result.msg);
+    }
   };
 
   const renderTitle = () => {
@@ -119,9 +169,15 @@ function Categories() {
       width: 300,
       render: (category) => (
         <Space size={"middle"}>
-          <LinkButton onClick={() => handleClick(category)}>Expand</LinkButton>
-          <LinkButton onClick={() => showUpdate(category)}>Edit</LinkButton>
-          <LinkButton>Delete</LinkButton>
+          <LinkButton onClick={() => handleClickExpand(category)}>
+            Expand
+          </LinkButton>
+          <LinkButton onClick={() => handleClickEdit(category)}>
+            Edit
+          </LinkButton>
+          <LinkButton onClick={() => handleClickDelete(category)}>
+            Delete
+          </LinkButton>
         </Space>
       ),
     },
@@ -142,22 +198,32 @@ function Categories() {
         visible={isModalVisible === 1}
         onOk={addCategory}
         onCancel={handleCancel}
+        destroyOnClose
       >
-        <AddCategoryForm addCategory={handleAddCategory}></AddCategoryForm>
+        <AddCategoryForm></AddCategoryForm>
       </Modal>
       <Modal
         title="Update category"
         visible={isModalVisible === 2}
         onOk={updateCategory}
         onCancel={handleCancel}
+        destroyOnClose
       >
-        <UpdateCategoryForm
-          categoryName={selectedCategory.name}
-          updateCategory={handleUpdateCategory}
-        ></UpdateCategoryForm>
+        <UpdateCategoryForm></UpdateCategoryForm>
+      </Modal>
+      <Modal
+        title="Delete category"
+        visible={isModalVisible === 3}
+        onOk={deleteCategory}
+        onCancel={handleCancel}
+      >
+        <p>Are you sure to delete this...</p>
       </Modal>
     </Card>
   );
 }
 
-export default Categories;
+export default connect((state) => ({ targetCategory: state.targetCategory }), {
+  edit: createEditAction,
+  editId: createEditIdAction,
+})(Categories);

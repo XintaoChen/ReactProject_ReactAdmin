@@ -1,32 +1,34 @@
 import React from "react";
-import { Form, Select, Input } from "antd";
+import { Form, Divider, Input } from "antd";
+
+// redux
+import { connect } from "react-redux";
+import { createEditNameAction } from "../../redux/actions/category";
 
 function AddCategoryForm(props) {
-  const handelFinish = (values) => {
-    props.addCategory(values);
+  const handleChange = (e) => {
+    props.editName(e.target.value);
   };
+
   return (
     <Form
       initialValues={{
         remember: true,
       }}
-      onFinish={handelFinish}
     >
-      <Form.Item name="parentId">
-        <div>Category</div>
-        <Select defaultActiveFirstOption>
-          <Select.Option value={"0"}>Catagory</Select.Option>
-          <Select.Option value={"1"}>Computer</Select.Option>
-          <Select.Option value={"2"}>Book</Select.Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item name="categoryName">
+      <p>Add a new category as subcategory of current category</p>
+      <Divider></Divider>
+      <Form.Item>
         <div>Name</div>
-        <Input placeholder="input name of category"></Input>
+        <Input
+          placeholder="input name of category"
+          onChange={handleChange}
+        ></Input>
       </Form.Item>
     </Form>
   );
 }
 
-export default AddCategoryForm;
+export default connect((state) => ({ targetCategory: state.targetCategory }), {
+  editName: createEditNameAction,
+})(AddCategoryForm);
