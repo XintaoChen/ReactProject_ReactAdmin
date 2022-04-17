@@ -6,7 +6,6 @@ const reqAddCategory = async (req, res) => {
     const { parentId, name } = req.body;
 
     let category = await Category.findOne({ name: name });
-    console.log(category);
     if (category) {
       res.json({
         status: 1,

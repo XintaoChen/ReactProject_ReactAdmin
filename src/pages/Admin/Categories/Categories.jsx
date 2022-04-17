@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 import LinkButton from "../../../components/LinkButton/LinkButton";
 
-import { Card, Button, Table, Space, message, Modal } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Card, Table, Space, message, Modal } from "antd";
+
 import {
   reqCategories,
   reqUpdateCategory,
@@ -18,7 +18,9 @@ import { connect } from "react-redux";
 import {
   createEditAction,
   createEditIdAction,
+  createEditStatusAction,
 } from "../../../redux/actions/category";
+import AddOneBtn from "../../../components/AddOneBtn/AddOneBtn";
 
 function Categories(props) {
   const [isModalVisible, setIsModalVisible] = useState(0);
@@ -28,7 +30,7 @@ function Categories(props) {
   const [title, setTitle] = useState(["Catagories"]);
   const [pathId, setPathId] = useState(["000000000000000000000000"]);
 
-  const { edit, targetCategory, editId } = props;
+  const { edit, targetCategory, editId, editStatus } = props;
 
   const handleClickAddOne = () => {
     setIsModalVisible(1);
@@ -36,6 +38,9 @@ function Categories(props) {
   };
 
   const addCategory = async () => {
+    if (!targetCategory.status) {
+      return;
+    }
     setIsModalVisible(0);
 
     // send add a new category request to back server
@@ -71,15 +76,17 @@ function Categories(props) {
   };
 
   const handleCancel = () => {
+    editStatus(0);
     setIsModalVisible(0);
   };
 
   const extra = (
-    <Button type="primary" onClick={handleClickAddOne}>
-      <PlusOutlined />
-      Add One
-    </Button>
+    <AddOneBtn title="Add One" handleClick={handleClickAddOne}></AddOneBtn>
   );
+
+  const getCategoriesCallBack = useCallback(() => {
+    getCategories();
+  });
 
   async function getCategories() {
     setLoading(true);
@@ -94,17 +101,7 @@ function Categories(props) {
   }
 
   useEffect(() => {
-    (async function () {
-      setLoading(true);
-      let categories = await reqCategories(parentId);
-      setLoading(false);
-      if (categories.status === 0) {
-        setCategories(categories.list);
-      } else if (categories.status === 1) {
-        message.error("Failed to request list of category");
-        console.log(categories.msg);
-      }
-    })();
+    getCategoriesCallBack();
   }, [parentId]);
 
   const handleClickExpand = (category) => {
@@ -226,4 +223,5 @@ function Categories(props) {
 export default connect((state) => ({ targetCategory: state.targetCategory }), {
   edit: createEditAction,
   editId: createEditIdAction,
+  editStatus: createEditStatusAction,
 })(Categories);
