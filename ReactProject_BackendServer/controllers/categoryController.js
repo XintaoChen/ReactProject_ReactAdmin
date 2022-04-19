@@ -1,36 +1,35 @@
 const mongoose = require("mongoose");
 const Category = require("../models/Category");
 
-const reqAddCategory = (req, res) => {
+const reqAddCategory = async (req, res) => {
   try {
     const { parentId, name } = req.body;
 
-    console.log(parentId, name);
-    let newCategory = new Category({
-      parentId: parentId,
-      name: name,
-    });
+    let category = await Category.findOne({ name: name });
+    if (category) {
+      res.json({
+        status: 1,
+        msg: "already exist",
+      });
+    } else {
+      let newCategory = new Category({
+        parentId: parentId,
+        name: name,
+      });
 
-    newCategory.save((err) => {
-      if (err) {
-        res.json({
-          status: 1,
-          msg: err,
-        });
-      } else {
-        res.json({
-          status: 0,
-          data: newCategory,
-        });
-      }
-    });
+      newCategory.save((err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.json({
+            status: 0,
+            data: newCategory,
+          });
+        }
+      });
+    }
   } catch (err) {
     console.log(err);
-    res.json({
-      status: 1,
-      msg: err,
-    });
-    next(err);
   }
 };
 
@@ -52,27 +51,37 @@ const reqCategories = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.json({
-      status: 1,
-      msg: err,
-    });
   }
 };
 
 const reqUpdateCategory = (req, res) => {
   try {
     const { categoryId, categoryName } = req.body;
+    Category.findByIdAndUpdate(categoryId, { name: categoryName }, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json({
+          status: 0,
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-    Category.updateOne({ _id: categoryId }, { name: categoryName }).then(() => {
+const reqDeleteCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.body;
+
+    Category.findByIdAndDelete(categoryId, (err, data) => {
       res.json({
         status: 0,
       });
     });
   } catch (err) {
-    res.json({
-      status: 1,
-      msg: err,
-    });
+    console.log(err);
   }
 };
 
@@ -80,4 +89,5 @@ module.exports = {
   reqAddCategory,
   reqCategories,
   reqUpdateCategory,
+  reqDeleteCategory,
 };

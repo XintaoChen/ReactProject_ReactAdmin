@@ -1,32 +1,53 @@
 import React from "react";
-import { Form, Select, Input } from "antd";
+import { Form, Divider, Input } from "antd";
+
+// redux
+import { connect } from "react-redux";
+import {
+  createEditNameAction,
+  createEditStatusAction,
+} from "../../redux/actions/category";
 
 function AddCategoryForm(props) {
-  const handelFinish = (values) => {
-    props.addCategory(values);
+  const [form] = Form.useForm();
+  const handleChange = async (e) => {
+    props.editName(e.target.value);
+    try {
+      await form.validateFields();
+      props.editStatus(1);
+    } catch (err) {
+      props.editStatus(0);
+    }
   };
-  return (
-    <Form
-      initialValues={{
-        remember: true,
-      }}
-      onFinish={handelFinish}
-    >
-      <Form.Item name="parentId">
-        <div>Category</div>
-        <Select defaultActiveFirstOption>
-          <Select.Option value={"0"}>Catagory</Select.Option>
-          <Select.Option value={"1"}>Computer</Select.Option>
-          <Select.Option value={"2"}>Book</Select.Option>
-        </Select>
-      </Form.Item>
 
-      <Form.Item name="categoryName">
-        <div>Name</div>
-        <Input placeholder="input name of category"></Input>
+  return (
+    <Form form={form} preserve={false}>
+      <p>Add a new category as subcategory of current category</p>
+      <Divider></Divider>
+      <div>Name</div>
+      <Form.Item
+        name="categorieName"
+        rules={[
+          {
+            required: true,
+            message: "Category name can not be empty!",
+          },
+          {
+            pattern: /^[\w]+$/,
+            message: "Please input number, letter or underline!",
+          },
+        ]}
+      >
+        <Input
+          placeholder="input name of category"
+          onChange={handleChange}
+        ></Input>
       </Form.Item>
     </Form>
   );
 }
 
-export default AddCategoryForm;
+export default connect((state) => ({ targetCategory: state.targetCategory }), {
+  editName: createEditNameAction,
+  editStatus: createEditStatusAction,
+})(AddCategoryForm);

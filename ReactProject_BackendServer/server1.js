@@ -11,9 +11,11 @@ const db = require("./models/db");
 // link to routes
 const userRouter = require("./routes/userRouter");
 const categoryRouter = require("./routes/categoryRouter");
+const productRouter = require("./routes/productRouter");
 
 app.use("/manage/user", userRouter);
 app.use("/manage/category", categoryRouter);
+app.use("/manage/product", productRouter);
 // login
 const loginController = require("./controllers/loginController");
 app.post("/login", (req, res) => {
